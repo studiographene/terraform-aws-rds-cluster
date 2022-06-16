@@ -114,14 +114,18 @@ resource "aws_rds_cluster" "primary" {
       timeout_action           = lookup(scaling_configuration.value, "timeout_action", null)
     }
   }
-
-  dynamic "serverlessv2_scaling_configuration" {
-    for_each = var.serverlessv2_scaling_configuration[*]
-    content {
-      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
-      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
-    }
-  }
+    
+#commented because of error on using the module.
+#Error: dynamic "serverlessv2_scaling_configuration" {
+#       Blocks of type "serverlessv2_scaling_configuration" are not expected here.
+    
+  #dynamic "serverlessv2_scaling_configuration" {
+  #  for_each = var.serverlessv2_scaling_configuration[*]
+  #  content {
+  #    max_capacity = serverlessv2_scaling_configuration.value.max_capacity
+  #    min_capacity = serverlessv2_scaling_configuration.value.min_capacity
+  #  }
+  #}
 
   dynamic "timeouts" {
     for_each = var.timeouts_configuration
