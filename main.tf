@@ -24,7 +24,11 @@ resource "aws_security_group" "default" {
 
 resource "aws_security_group_rule" "ingress_security_groups" {
   count                    = local.enabled ? length(var.security_groups) : 0
-  description              = "Allow inbound traffic from existing security groups"
+  #original forked discription
+  #description              = "Allow inbound traffic from existing security groups"
+  
+  #customized description for StudioGraphene use
+  description              = "Allow inbound traffic from ECS Task Security Group"
   type                     = "ingress"
   from_port                = var.db_port
   to_port                  = var.db_port
