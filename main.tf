@@ -91,17 +91,17 @@ resource "aws_rds_cluster" "primary" {
   backtrack_window                    = var.backtrack_window
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
     
-  #commented because of error on using the module.
+  #commented because of error on using the module. To be worked on.
   #Error: dynamic "serverlessv2_scaling_configuration" {
   #       Blocks of type "serverlessv2_scaling_configuration" are not expected here.
     
-  dynamic "serverlessv2_scaling_configuration" {
-    for_each = var.serverlessv2_scaling_configuration[*]
-    content {
-      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
-      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
-    }
-  }
+ # dynamic "serverlessv2_scaling_configuration" {
+ #   for_each = var.serverlessv2_scaling_configuration[*]
+ #   content {
+ #     max_capacity = serverlessv2_scaling_configuration.value.max_capacity
+ #     min_capacity = serverlessv2_scaling_configuration.value.min_capacity
+ #   }
+ # }
 
   depends_on = [
     aws_db_subnet_group.default,
