@@ -90,6 +90,18 @@ resource "aws_rds_cluster" "primary" {
   iam_roles                           = var.iam_roles
   backtrack_window                    = var.backtrack_window
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
+    
+  #commented because of error on using the module.
+  #Error: dynamic "serverlessv2_scaling_configuration" {
+  #       Blocks of type "serverlessv2_scaling_configuration" are not expected here.
+    
+  dynamic "serverlessv2_scaling_configuration" {
+    for_each = var.serverlessv2_scaling_configuration[*]
+    content {
+      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
+      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
+    }
+  }
 
   depends_on = [
     aws_db_subnet_group.default,
@@ -116,18 +128,6 @@ resource "aws_rds_cluster" "primary" {
       min_capacity             = lookup(scaling_configuration.value, "min_capacity", null)
       seconds_until_auto_pause = lookup(scaling_configuration.value, "seconds_until_auto_pause", null)
       timeout_action           = lookup(scaling_configuration.value, "timeout_action", null)
-    }
-  }
-    
-#commented because of error on using the module.
-#Error: dynamic "serverlessv2_scaling_configuration" {
-#       Blocks of type "serverlessv2_scaling_configuration" are not expected here.
-    
-  dynamic "serverlessv2_scaling_configuration" {
-    for_each = var.serverlessv2_scaling_configuration[*]
-    content {
-      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
-      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
     }
   }
 
