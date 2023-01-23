@@ -14,7 +14,7 @@
 
 module "this" {
   source  = "app.terraform.io/studiographene/sg-label/null"
-  version = "1.0.1"
+  version = "1.0.2"
 
   enabled             = var.enabled
   project_name        = var.project_name
@@ -32,6 +32,8 @@ module "this" {
   label_value_case    = var.label_value_case
   descriptor_formats  = var.descriptor_formats
   labels_as_tags      = var.labels_as_tags
+  name                = var.name
+  namespace           = var.namespace
 
   context = var.context
 }
@@ -251,4 +253,20 @@ variable "descriptor_formats" {
     identical to how they appear in `id`.
     Default is `{}` (`descriptors` output will be empty).
     EOT
+}
+
+variable "name" {
+  type        = string
+  default     = null
+  description = <<-EOT
+    ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'.
+    This is the only ID element not also included as a `tag`.
+    The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input.
+    EOT
+}
+
+variable "namespace" {
+  type        = string
+  default     = null
+  description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
 }
