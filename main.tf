@@ -328,9 +328,9 @@ resource "aws_db_parameter_group" "default" {
 }
 
 locals {
-  cluster_dns_name_default = "master.${module.this.name}"
+  cluster_dns_name_default = "master.${module.this.id}"
   cluster_dns_name         = var.cluster_dns_name != "" ? var.cluster_dns_name : local.cluster_dns_name_default
-  reader_dns_name_default  = "replicas.${module.this.name}"
+  reader_dns_name_default  = "replicas.${module.this.id}"
   reader_dns_name          = var.reader_dns_name != "" ? var.reader_dns_name : local.reader_dns_name_default
 }
 
