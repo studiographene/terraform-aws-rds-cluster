@@ -95,13 +95,13 @@ resource "aws_rds_cluster" "primary" {
   #Error: dynamic "serverlessv2_scaling_configuration" {
   #       Blocks of type "serverlessv2_scaling_configuration" are not expected here.
     
- # dynamic "serverlessv2_scaling_configuration" {
- #   for_each = var.serverlessv2_scaling_configuration[*]
- #   content {
- #     max_capacity = serverlessv2_scaling_configuration.value.max_capacity
- #     min_capacity = serverlessv2_scaling_configuration.value.min_capacity
- #   }
- # }
+  dynamic "serverlessv2_scaling_configuration" {
+    for_each = var.serverlessv2_scaling_configuration[*]
+    content {
+      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
+      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
+    }
+  }
 
   depends_on = [
     aws_db_subnet_group.default,
