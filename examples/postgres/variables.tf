@@ -47,6 +47,12 @@ variable "engine_mode" {
   description = "The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless`"
 }
 
+variable "engine_version" {
+  type        = string
+  default     = ""
+  description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
+}
+
 variable "deletion_protection" {
   type        = bool
   description = "If the DB instance should have deletion protection enabled"
@@ -85,8 +91,8 @@ variable "allocated_storage" {
   default     = null
 }
 
-variable "intra_security_group_traffic_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to allow traffic between resources inside the database's security group."
+variable "db_cluster_instance_class" {
+  type        = string
+  default     = "db.m5d.large"
+  description = "This setting is required to create a Multi-AZ DB cluste"
 }

@@ -1,5 +1,3 @@
-enabled = true
-
 region = "us-east-2"
 
 availability_zones = ["us-east-2a", "us-east-2b"]
@@ -33,3 +31,5 @@ admin_password = "admin_password"
 enhanced_monitoring_role_enabled = true
 
 rds_monitoring_interval = 30
+
+intra_security_group_traffic_enabled = true

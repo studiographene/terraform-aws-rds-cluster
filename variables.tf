@@ -1,7 +1,11 @@
 variable "zone_id" {
-  type        = string
-  default     = ""
-  description = "Route53 parent zone ID. If provided (not empty), the module will create sub-domain DNS records for the DB master and replicas"
+  type        = any
+  default     = []
+  description = <<-EOT
+    Route53 DNS Zone ID as list of string (0 or 1 items). If empty, no custom DNS name will be published.
+    If the list contains a single Zone ID, a custom DNS name will be pulished in that zone.
+    Can also be a plain string, but that use is DEPRECATED because of Terraform issues.
+    EOT
 }
 
 variable "security_groups" {
@@ -104,6 +108,12 @@ variable "instance_parameters" {
   }))
   default     = []
   description = "List of DB instance parameters to apply"
+}
+
+variable "db_cluster_instance_class" {
+  type        = string
+  default     = null
+  description = "This setting is required to create a provisioned Multi-AZ DB cluster"
 }
 
 variable "cluster_family" {
@@ -211,6 +221,24 @@ variable "storage_encrypted" {
   type        = bool
   description = "Specifies whether the DB cluster is encrypted. The default is `false` for `provisioned` `engine_mode` and `true` for `serverless` `engine_mode`"
   default     = false
+}
+
+variable "storage_type" {
+  type        = string
+  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
+  default     = null
+}
+
+variable "iops" {
+  type        = number
+  description = "The amount of provisioned IOPS. Setting this implies a storage_type of 'io1'. This setting is required to create a Multi-AZ DB cluster. Check TF docs for values based on db engine"
+  default     = null
+}
+
+variable "allocated_storage" {
+  type        = number
+  description = "The allocated storage in GBs"
+  default     = null
 }
 
 variable "kms_key_arn" {
@@ -437,4 +465,10 @@ variable "subnet_group_name" {
   description = "Database subnet group name. Will use generated label ID if not supplied."
   type        = string
   default     = ""
+}
+
+variable "intra_security_group_traffic_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to allow traffic between resources inside the database's security group."
 }

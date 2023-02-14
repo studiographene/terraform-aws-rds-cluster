@@ -37,6 +37,17 @@ resource "aws_security_group_rule" "ingress_security_groups" {
   security_group_id        = join("", aws_security_group.default.*.id)
 }
 
+resource "aws_security_group_rule" "traffic_inside_security_group" {
+  count             = local.enabled && var.intra_security_group_traffic_enabled ? 1 : 0
+  description       = "Allow traffic between members of the database security group"
+  type              = "ingress"
+  from_port         = var.db_port
+  to_port           = var.db_port
+  protocol          = "tcp"
+  self              = true
+  security_group_id = join("", aws_security_group.default.*.id)
+}
+
 resource "aws_security_group_rule" "ingress_cidr_blocks" {
   count             = local.enabled && length(var.allowed_cidr_blocks) > 0 ? 1 : 0
   description       = "Allow inbound traffic from existing CIDR blocks"
@@ -73,7 +84,11 @@ resource "aws_rds_cluster" "primary" {
   final_snapshot_identifier           = var.cluster_identifier == "" ? lower(module.this.id) : lower(var.cluster_identifier)
   skip_final_snapshot                 = var.skip_final_snapshot
   apply_immediately                   = var.apply_immediately
+  db_cluster_instance_class           = local.is_serverless ? null : var.db_cluster_instance_class
   storage_encrypted                   = local.is_serverless ? null : var.storage_encrypted
+  storage_type                        = var.storage_type
+  iops                                = var.iops
+  allocated_storage                   = var.allocated_storage
   kms_key_id                          = var.kms_key_arn
   source_region                       = var.source_region
   snapshot_identifier                 = var.snapshot_identifier
@@ -86,6 +101,7 @@ resource "aws_rds_cluster" "primary" {
   engine                              = var.engine
   engine_version                      = var.engine_version
   allow_major_version_upgrade         = var.allow_major_version_upgrade
+  db_instance_parameter_group_name    = var.allow_major_version_upgrade ? join("", aws_db_parameter_group.default.*.name) : null
   engine_mode                         = var.engine_mode
   iam_roles                           = var.iam_roles
   backtrack_window                    = var.backtrack_window
@@ -152,7 +168,7 @@ resource "aws_rds_cluster" "primary" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster#replication_source_identifier
 resource "aws_rds_cluster" "secondary" {
-  count                               = local.enabled && ! local.is_regional_cluster ? 1 : 0
+  count                               = local.enabled && !local.is_regional_cluster ? 1 : 0
   cluster_identifier                  = var.cluster_identifier == "" ? module.this.id : var.cluster_identifier
   database_name                       = var.db_name
   master_username                     = local.ignore_admin_credentials ? null : var.admin_user
@@ -336,7 +352,7 @@ module "dns_master" {
 
   enabled  = local.enabled && length(var.zone_id) > 0
   dns_name = local.cluster_dns_name
-  zone_id  = var.zone_id
+  zone_id  = try(var.zone_id[0], tostring(var.zone_id), "")
   records  = coalescelist(aws_rds_cluster.primary.*.endpoint, aws_rds_cluster.secondary.*.endpoint, [""])
 
   context = module.this.context
@@ -346,9 +362,9 @@ module "dns_replicas" {
   source  = "cloudposse/route53-cluster-hostname/aws"
   version = "0.12.2"
 
-  enabled  = local.enabled && length(var.zone_id) > 0 && ! local.is_serverless && local.cluster_instance_count > 0
+  enabled  = local.enabled && length(var.zone_id) > 0 && !local.is_serverless && local.cluster_instance_count > 0
   dns_name = local.reader_dns_name
-  zone_id  = var.zone_id
+  zone_id  = try(var.zone_id[0], tostring(var.zone_id), "")
   records  = coalescelist(aws_rds_cluster.primary.*.reader_endpoint, aws_rds_cluster.secondary.*.reader_endpoint, [""])
 
   context = module.this.context
