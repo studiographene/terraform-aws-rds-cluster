@@ -24,7 +24,11 @@ resource "aws_security_group" "default" {
 
 resource "aws_security_group_rule" "ingress_security_groups" {
   count                    = local.enabled ? length(var.security_groups) : 0
-  description              = "Allow inbound traffic from existing security groups"
+  #original forked discription
+  #description              = "Allow inbound traffic from existing security groups"
+  
+  #customized description for StudioGraphene use
+  description              = "Allow inbound traffic from ECS Task Security Group"
   type                     = "ingress"
   from_port                = var.db_port
   to_port                  = var.db_port
@@ -102,6 +106,14 @@ resource "aws_rds_cluster" "primary" {
   iam_roles                           = var.iam_roles
   backtrack_window                    = var.backtrack_window
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
+    
+  dynamic "serverlessv2_scaling_configuration" {
+    for_each = var.serverlessv2_scaling_configuration[*]
+    content {
+      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
+      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
+    }
+  }
 
   depends_on = [
     aws_db_subnet_group.default,
@@ -128,14 +140,6 @@ resource "aws_rds_cluster" "primary" {
       min_capacity             = lookup(scaling_configuration.value, "min_capacity", null)
       seconds_until_auto_pause = lookup(scaling_configuration.value, "seconds_until_auto_pause", null)
       timeout_action           = lookup(scaling_configuration.value, "timeout_action", null)
-    }
-  }
-
-  dynamic "serverlessv2_scaling_configuration" {
-    for_each = var.serverlessv2_scaling_configuration[*]
-    content {
-      max_capacity = serverlessv2_scaling_configuration.value.max_capacity
-      min_capacity = serverlessv2_scaling_configuration.value.min_capacity
     }
   }
 
@@ -336,9 +340,9 @@ resource "aws_db_parameter_group" "default" {
 }
 
 locals {
-  cluster_dns_name_default = "master.${module.this.name}"
+  cluster_dns_name_default = "master.${module.this.id}"
   cluster_dns_name         = var.cluster_dns_name != "" ? var.cluster_dns_name : local.cluster_dns_name_default
-  reader_dns_name_default  = "replicas.${module.this.name}"
+  reader_dns_name_default  = "replicas.${module.this.id}"
   reader_dns_name          = var.reader_dns_name != "" ? var.reader_dns_name : local.reader_dns_name_default
 }
 
