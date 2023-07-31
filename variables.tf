@@ -249,8 +249,8 @@ variable "kms_key_arn" {
 
 variable "skip_final_snapshot" {
   type        = bool
-  description = "Determines whether a final DB snapshot is created before the DB cluster is deleted"
-  default     = true
+  description = "Determines whether to skip final DB snapshot creation before the DB cluster is deleted. Setting `true` will not create snapshot. Default = false"
+  default     = false
 }
 
 variable "copy_tags_to_snapshot" {
