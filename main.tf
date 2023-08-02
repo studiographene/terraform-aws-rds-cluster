@@ -13,20 +13,24 @@ data "aws_partition" "current" {
   count = local.enabled ? 1 : 0
 }
 
-# TODO: Use cloudposse/security-group module
 resource "aws_security_group" "default" {
   count       = local.enabled ? 1 : 0
   name        = module.this.id
   description = "Allow inbound traffic from Security Groups and CIDRs"
   vpc_id      = var.vpc_id
-  tags        = module.this.tags
+
+  tags = merge(module.this.tags,
+    {
+      Name = "${module.this.id}-rds"
+    }
+  )
 }
 
 resource "aws_security_group_rule" "ingress_security_groups" {
-  count                    = local.enabled ? length(var.security_groups) : 0
+  count = local.enabled ? length(var.security_groups) : 0
   #original forked discription
   #description              = "Allow inbound traffic from existing security groups"
-  
+
   #customized description for StudioGraphene use
   description              = "Allow inbound traffic from ECS Task Security Group"
   type                     = "ingress"
@@ -106,7 +110,7 @@ resource "aws_rds_cluster" "primary" {
   iam_roles                           = var.iam_roles
   backtrack_window                    = var.backtrack_window
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
-    
+
   dynamic "serverlessv2_scaling_configuration" {
     for_each = var.serverlessv2_scaling_configuration[*]
     content {
