@@ -2,8 +2,8 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster_instance#monitoring_role_arn
 
 module "enhanced_monitoring_label" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0"
+  source  = "app.terraform.io/studiographene/sg-label/null"
+  version = "1.0.4"
 
   enabled    = module.this.enabled && var.enhanced_monitoring_role_enabled
   attributes = var.enhanced_monitoring_attributes

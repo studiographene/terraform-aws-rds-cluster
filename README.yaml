@@ -31,7 +31,8 @@ related:
     description: Terraform module to provision AWS RDS instances
     url: https://github.com/cloudposse/terraform-aws-rds
   - name: terraform-aws-rds-cloudwatch-sns-alarms
-    description: Terraform module that configures important RDS alerts using CloudWatch
+    description:
+      Terraform module that configures important RDS alerts using CloudWatch
       and sends them to an SNS topic
     url: https://github.com/cloudposse/terraform-aws-rds-cloudwatch-sns-alarms
 
@@ -52,7 +53,8 @@ usage: |2-
   module "rds_cluster_aurora_postgres" {
     source = "cloudposse/rds-cluster/aws"
     # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+  # version     = "x.x.x"
+
 
     name            = "postgres"
     engine          = "aurora-postgresql"
@@ -84,7 +86,8 @@ usage: |2-
   module "rds_cluster_aurora_mysql_serverless" {
     source = "cloudposse/rds-cluster/aws"
     # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+  # version     = "x.x.x"
+
     namespace            = "eg"
     stage                = "dev"
     name                 = "db"
@@ -120,7 +123,8 @@ usage: |2-
   module "rds_cluster_aurora_mysql_serverless" {
     source = "cloudposse/rds-cluster/aws"
     # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+  # version     = "x.x.x"
+
     namespace            = "eg"
     stage                = "dev"
     name                 = "db"
@@ -157,7 +161,8 @@ usage: |2-
   module "rds_cluster_aurora_mysql" {
     source = "cloudposse/rds-cluster/aws"
     # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+  # version     = "x.x.x"
+
     engine          = "aurora"
     cluster_family  = "aurora-mysql5.7"
     cluster_size    = 2
@@ -250,7 +255,8 @@ usage: |2-
   module "rds_cluster_aurora_postgres" {
     source = "cloudposse/rds-cluster/aws"
     # Cloud Posse recommends pinning every module to a specific version
-    # version     = "x.x.x"
+  # version     = "x.x.x"
+
     engine          = "aurora-postgresql"
     cluster_family  = "aurora-postgresql9.6"
     cluster_size    = 2
