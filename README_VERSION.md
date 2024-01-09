@@ -8,6 +8,7 @@ resource "aws_security_group_rule" "ingress" replaced from count to for_each inp
 
 > Note
 
+ For once when upgrading to this version of module, SG rules will be recreated as result of changing to for_each.
 
 
 #### Why:
