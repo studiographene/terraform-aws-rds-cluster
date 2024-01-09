@@ -1,6 +1,19 @@
-# v1.0.0
+# v1.1.3
 
-### Fix
+### What:
 
-Updated security group rule ingress to have for_each instead of count function for the input var.security_groups as source_security_group_id values.
+> Fix
+
+resource "aws_security_group_rule" "ingress" replaced from count to for_each input.
+
+> Note
+
+
+
+#### Why:
+
+count input was replacing and re-adding existing security group ids for any new input for the variable ```security_groups```.
+
+#### info:
+
 

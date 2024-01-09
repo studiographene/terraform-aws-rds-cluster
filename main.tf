@@ -28,10 +28,7 @@ resource "aws_security_group" "default" {
 
 resource "aws_security_group_rule" "ingress_security_groups" {
   for_each = toset([for v in var.security_groups : v if local.enabled])
-  #original forked discription
 
-
-  #customized description for StudioGraphene use
   description              = "Allow inbound traffic from existing security groups"
   type                     = "ingress"
   from_port                = var.db_port
