@@ -1,3 +1,21 @@
+# v1.2.0
+
+### What:
+
+> Enhance
+
+Security group name is suffixed with `rds` for easy identity.
+
+> Breaking change
+
+SG will be recreated with same configs. If you have created SG rules for this RDS SG, you may have to remove those rules as well temporarily and add it back if `Terraform apply` gets stuck at destroying the RDS SG.
+
+#### Why:
+
+Earlier SG name had only Label Context label `id`.
+
+#### info:
+
 # v1.1.3
 
 ### What:
@@ -8,13 +26,10 @@ resource "aws_security_group_rule" "ingress" replaced from count to for_each inp
 
 > Note
 
- For once when upgrading to this version of module, SG rules will be recreated as result of changing to for_each.
-
+For once when upgrading to this version of module, SG rules will be recreated as result of changing to for_each.
 
 #### Why:
 
 count input was replacing and re-adding existing security group ids for any new input for the variable `security_groups` .
 
 #### info:
-
-

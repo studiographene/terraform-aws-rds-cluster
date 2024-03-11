@@ -15,7 +15,7 @@ data "aws_partition" "current" {
 
 resource "aws_security_group" "default" {
   count       = local.enabled ? 1 : 0
-  name        = module.this.id
+  name        = "${module.this.id}-rds"
   description = "Allow inbound traffic from Security Groups and CIDRs"
   vpc_id      = var.vpc_id
 
