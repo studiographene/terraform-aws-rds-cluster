@@ -378,6 +378,8 @@ resource "aws_appautoscaling_target" "replicas" {
   resource_id        = "cluster:${coalesce(join("", aws_rds_cluster.primary.*.id), join("", aws_rds_cluster.secondary.*.id))}"
   min_capacity       = var.autoscaling_min_capacity
   max_capacity       = var.autoscaling_max_capacity
+
+  tags = module.this.tags
 }
 
 resource "aws_appautoscaling_policy" "replicas" {

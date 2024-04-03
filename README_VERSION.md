@@ -1,3 +1,17 @@
+# v1.2.1
+
+### What:
+
+> Fix
+
+AutoScaled instances tagging added to resource "aws_appautoscaling_target".
+
+#### Why:
+
+AutoScaled instance did not have tags until this change.
+
+#### info:
+
 # v1.2.0
 
 ### What:
