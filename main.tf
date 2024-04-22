@@ -27,7 +27,7 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_security_group_rule" "ingress_security_groups" {
-  for_each = local.enabled ? length(var.security_groups) : 0
+  count = local.enabled ? length(var.security_groups) : 0
 
   description              = "Allow inbound traffic from existing security groups"
   type                     = "ingress"
