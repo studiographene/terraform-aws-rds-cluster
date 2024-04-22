@@ -1,3 +1,22 @@
+# v1.2.2
+
+### What:
+
+> Fix
+
+Error: When applying this module for the first time, resource "aws_security_group_rule" "ingress" for_each not known before apply
+Fix: Roll back changes made in `v1.1.3`
+
+> Note
+
+For once when upgrading to this version of module, SG rules will be recreated as with same configuration.
+
+#### Why:
+
+Error: When applying this module for the first time, resource "aws_security_group_rule" "ingress" for_each not known before apply
+
+#### info:
+
 # v1.2.1
 
 ### What:
