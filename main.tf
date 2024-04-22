@@ -27,14 +27,14 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_security_group_rule" "ingress_security_groups" {
-  for_each = toset([for v in var.security_groups : v if local.enabled])
+  for_each = local.enabled ? length(var.security_groups) : 0
 
   description              = "Allow inbound traffic from existing security groups"
   type                     = "ingress"
   from_port                = var.db_port
   to_port                  = var.db_port
   protocol                 = "tcp"
-  source_security_group_id = each.key
+  source_security_group_id = var.security_groups[count.index]
   security_group_id        = join("", aws_security_group.default.*.id)
 }
 
