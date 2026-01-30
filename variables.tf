@@ -225,7 +225,7 @@ variable "storage_encrypted" {
 
 variable "storage_type" {
   type        = string
-  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
+  description = "One of 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
   default     = null
 }
 
@@ -305,6 +305,24 @@ variable "enabled_cloudwatch_logs_exports" {
   type        = list(string)
   description = "List of log types to export to cloudwatch. The following log types are supported: audit, error, general, slowquery"
   default     = []
+}
+
+variable "create_cloudwatch_log_groups" {
+  description = "Whether this module should create the CloudWatch Log Groups used by RDS cluster log exports. If false, log groups must be created elsewhere."
+  type        = bool
+  default     = true
+}
+
+variable "cloudwatch_log_group_kms_key_id" {
+  description = "Optional KMS key ARN/ID for CloudWatch Log Group encryption. If null, CloudWatch Logs uses default encryption."
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_log_group_retention_in_days" {
+  description = "Optional retention in days for the CloudWatch Log Groups. If null, log events are retained indefinitely."
+  type        = number
+  default     = null
 }
 
 variable "performance_insights_enabled" {
