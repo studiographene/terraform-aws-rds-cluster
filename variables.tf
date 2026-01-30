@@ -225,8 +225,8 @@ variable "storage_encrypted" {
 
 variable "storage_type" {
   type        = string
-  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
-  default     = "gp2"
+  description = "One of 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
+  default     = null
 }
 
 variable "iops" {

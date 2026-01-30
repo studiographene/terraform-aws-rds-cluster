@@ -5,7 +5,7 @@
 > feat
 
 `cloudwatch_log_group_kms_key_id` Optional KMS key ARN/ID for CloudWatch Log Group encryption."
-updated `storage_type` from deprecated magnetic to gp2 as default.
+removed `storage_type` magnetic type suggestion (deprecated)  .
 
 #### Why:
 
