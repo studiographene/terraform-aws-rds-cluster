@@ -7,6 +7,18 @@ locals {
   is_regional_cluster      = var.cluster_type == "regional"
   is_serverless            = var.engine_mode == "serverless"
   ignore_admin_credentials = var.replication_source_identifier != "" || var.snapshot_identifier != null
+
+  rds_cloudwatch_log_group_prefix = "/aws/rds/cluster/${var.cluster_identifier == "" ? module.this.id : var.cluster_identifier}"
+}
+
+resource "aws_cloudwatch_log_group" "exports" {
+  for_each = local.enabled && var.create_cloudwatch_log_groups ? toset(var.enabled_cloudwatch_logs_exports) : toset([])
+
+  name              = "${local.rds_cloudwatch_log_group_prefix}/${each.value}"
+  kms_key_id        = var.cloudwatch_log_group_kms_key_id
+  retention_in_days = var.cloudwatch_log_group_retention_in_days
+
+  tags = module.this.tags
 }
 
 data "aws_partition" "current" {
@@ -117,6 +129,7 @@ resource "aws_rds_cluster" "primary" {
   }
 
   depends_on = [
+    aws_cloudwatch_log_group.exports,
     aws_db_subnet_group.default,
     aws_rds_cluster_parameter_group.default,
     aws_security_group.default,
@@ -199,6 +212,7 @@ resource "aws_rds_cluster" "secondary" {
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
 
   depends_on = [
+    aws_cloudwatch_log_group.exports,
     aws_db_subnet_group.default,
     aws_db_parameter_group.default,
     aws_rds_cluster_parameter_group.default,

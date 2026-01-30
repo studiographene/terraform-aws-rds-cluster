@@ -1,3 +1,17 @@
+# v1.3.0
+
+### What:
+
+> feat
+
+`cloudwatch_log_group_kms_key_id` Optional KMS key ARN/ID for CloudWatch Log Group encryption."
+
+#### Why:
+
+Cloudwatch log groups for rds gets encrypted with kms key. Helpful for compliances and logs encryption.
+
+#### info:
+
 # v1.2.2
 
 ### What:
