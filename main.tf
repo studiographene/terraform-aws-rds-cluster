@@ -7,6 +7,10 @@ locals {
   is_regional_cluster      = var.cluster_type == "regional"
   is_serverless            = var.engine_mode == "serverless"
   ignore_admin_credentials = var.replication_source_identifier != "" || var.snapshot_identifier != null
+
+  # When Database Insights mode is set, Performance Insights is managed at the cluster level and
+  # the cluster instances inherit it, so it is not set on the instances
+  cluster_level_performance_insights = var.database_insights_mode != null
 }
 
 data "aws_partition" "current" {
@@ -108,6 +112,11 @@ resource "aws_rds_cluster" "primary" {
   backtrack_window                    = var.backtrack_window
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
 
+  database_insights_mode                = var.database_insights_mode
+  performance_insights_enabled          = local.cluster_level_performance_insights ? var.performance_insights_enabled : null
+  performance_insights_kms_key_id       = local.cluster_level_performance_insights && var.performance_insights_kms_key_id != "" ? var.performance_insights_kms_key_id : null
+  performance_insights_retention_period = local.cluster_level_performance_insights ? var.performance_insights_retention_period : null
+
   dynamic "serverlessv2_scaling_configuration" {
     for_each = var.serverlessv2_scaling_configuration[*]
     content {
@@ -198,6 +207,11 @@ resource "aws_rds_cluster" "secondary" {
   backtrack_window                    = var.backtrack_window
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
 
+  database_insights_mode                = var.database_insights_mode
+  performance_insights_enabled          = local.cluster_level_performance_insights ? var.performance_insights_enabled : null
+  performance_insights_kms_key_id       = local.cluster_level_performance_insights && var.performance_insights_kms_key_id != "" ? var.performance_insights_kms_key_id : null
+  performance_insights_retention_period = local.cluster_level_performance_insights ? var.performance_insights_retention_period : null
+
   depends_on = [
     aws_db_subnet_group.default,
     aws_db_parameter_group.default,
@@ -257,9 +271,9 @@ resource "aws_rds_cluster_instance" "default" {
   auto_minor_version_upgrade            = var.auto_minor_version_upgrade
   monitoring_interval                   = var.rds_monitoring_interval
   monitoring_role_arn                   = var.enhanced_monitoring_role_enabled ? join("", aws_iam_role.enhanced_monitoring.*.arn) : var.rds_monitoring_role_arn
-  performance_insights_enabled          = var.performance_insights_enabled
-  performance_insights_kms_key_id       = var.performance_insights_kms_key_id
-  performance_insights_retention_period = var.performance_insights_retention_period
+  performance_insights_enabled          = local.cluster_level_performance_insights ? null : var.performance_insights_enabled
+  performance_insights_kms_key_id       = local.cluster_level_performance_insights ? null : var.performance_insights_kms_key_id
+  performance_insights_retention_period = local.cluster_level_performance_insights ? null : var.performance_insights_retention_period
   availability_zone                     = var.instance_availability_zone
   apply_immediately                     = var.apply_immediately
   preferred_maintenance_window          = var.maintenance_window
