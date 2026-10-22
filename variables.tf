@@ -320,9 +320,20 @@ variable "performance_insights_kms_key_id" {
 }
 
 variable "performance_insights_retention_period" {
-  description = "Amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years)"
+  description = "Amount of time in days to retain Performance Insights data. Either 7 (7 days), month * 31 (where month is 1-23) or 731 (2 years). When `database_insights_mode` is `advanced`, this must be at least 465"
   type        = number
   default     = null
+}
+
+variable "database_insights_mode" {
+  type        = string
+  default     = null
+  description = "The mode of Database Insights to enable for the cluster. Valid values: `standard`, `advanced`. When set, Performance Insights (`performance_insights_*` variables) is configured on the cluster instead of the cluster instances. `advanced` requires `performance_insights_enabled = true` and `performance_insights_retention_period` of at least 465 days"
+
+  validation {
+    condition     = var.database_insights_mode == null || contains(["standard", "advanced"], coalesce(var.database_insights_mode, "standard"))
+    error_message = "The database_insights_mode must be one of `standard` or `advanced`."
+  }
 }
 
 variable "autoscaling_enabled" {

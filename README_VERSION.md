@@ -1,3 +1,35 @@
+# v1.3.0
+
+### What:
+
+> Feature
+
+Performance Insights and Database Insights can now be configured at the cluster level.
+
+- New variable `database_insights_mode` (`standard` or `advanced`), passed to `aws_rds_cluster`.
+- When `database_insights_mode` is set, the existing `performance_insights_enabled`, `performance_insights_kms_key_id` and `performance_insights_retention_period` variables are applied to the cluster and are no longer set on `aws_rds_cluster_instance`.
+- When `database_insights_mode` is not set, behaviour is unchanged (Performance Insights is set on the cluster instances).
+
+> Note
+
+Minimum AWS provider version raised from `>= 4.23.0` to `>= 5.89.0` (first version supporting `database_insights_mode` on `aws_rds_cluster`).
+
+Example for Advanced mode:
+
+```hcl
+database_insights_mode                = "advanced"
+performance_insights_enabled          = true
+performance_insights_retention_period = 465
+```
+
+#### Why:
+
+Enabling Performance Insights on an RDS instance that is part of a cluster returned an error, and Database Insights Advanced mode can only be enabled on the cluster.
+
+#### info:
+
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster#database_insights_mode
+
 # v1.2.2
 
 ### What:
