@@ -8,9 +8,11 @@ locals {
   is_serverless            = var.engine_mode == "serverless"
   ignore_admin_credentials = var.replication_source_identifier != "" || var.snapshot_identifier != null
 
-  # When Database Insights mode is set, Performance Insights is managed at the cluster level and
-  # the cluster instances inherit it, so it is not set on the instances
+  # When Database Insights mode is set, Performance Insights and Enhanced Monitoring are managed at the
+  # cluster level and the cluster instances inherit them, so they are not set on the instances
   cluster_level_performance_insights = var.database_insights_mode != null
+
+  monitoring_role_arn = var.enhanced_monitoring_role_enabled ? join("", aws_iam_role.enhanced_monitoring.*.arn) : var.rds_monitoring_role_arn
 }
 
 data "aws_partition" "current" {
@@ -113,6 +115,8 @@ resource "aws_rds_cluster" "primary" {
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
 
   database_insights_mode                = var.database_insights_mode
+  monitoring_interval                   = local.cluster_level_performance_insights ? var.rds_monitoring_interval : null
+  monitoring_role_arn                   = local.cluster_level_performance_insights && var.rds_monitoring_interval > 0 ? local.monitoring_role_arn : null
   performance_insights_enabled          = local.cluster_level_performance_insights ? var.performance_insights_enabled : null
   performance_insights_kms_key_id       = local.cluster_level_performance_insights && var.performance_insights_kms_key_id != "" ? var.performance_insights_kms_key_id : null
   performance_insights_retention_period = local.cluster_level_performance_insights ? var.performance_insights_retention_period : null
@@ -208,6 +212,8 @@ resource "aws_rds_cluster" "secondary" {
   enable_http_endpoint                = local.is_serverless && var.enable_http_endpoint
 
   database_insights_mode                = var.database_insights_mode
+  monitoring_interval                   = local.cluster_level_performance_insights ? var.rds_monitoring_interval : null
+  monitoring_role_arn                   = local.cluster_level_performance_insights && var.rds_monitoring_interval > 0 ? local.monitoring_role_arn : null
   performance_insights_enabled          = local.cluster_level_performance_insights ? var.performance_insights_enabled : null
   performance_insights_kms_key_id       = local.cluster_level_performance_insights && var.performance_insights_kms_key_id != "" ? var.performance_insights_kms_key_id : null
   performance_insights_retention_period = local.cluster_level_performance_insights ? var.performance_insights_retention_period : null
@@ -270,7 +276,7 @@ resource "aws_rds_cluster_instance" "default" {
   engine_version                        = var.engine_version
   auto_minor_version_upgrade            = var.auto_minor_version_upgrade
   monitoring_interval                   = var.rds_monitoring_interval
-  monitoring_role_arn                   = var.enhanced_monitoring_role_enabled ? join("", aws_iam_role.enhanced_monitoring.*.arn) : var.rds_monitoring_role_arn
+  monitoring_role_arn                   = local.cluster_level_performance_insights ? null : local.monitoring_role_arn
   performance_insights_enabled          = local.cluster_level_performance_insights ? null : var.performance_insights_enabled
   performance_insights_kms_key_id       = local.cluster_level_performance_insights ? null : var.performance_insights_kms_key_id
   performance_insights_retention_period = local.cluster_level_performance_insights ? null : var.performance_insights_retention_period

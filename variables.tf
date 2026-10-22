@@ -328,7 +328,7 @@ variable "performance_insights_retention_period" {
 variable "database_insights_mode" {
   type        = string
   default     = null
-  description = "The mode of Database Insights to enable for the cluster. Valid values: `standard`, `advanced`. When set, Performance Insights (`performance_insights_*` variables) is configured on the cluster instead of the cluster instances. `advanced` requires `performance_insights_enabled = true` and `performance_insights_retention_period` of at least 465 days"
+  description = "The mode of Database Insights to enable for the cluster. Valid values: `standard`, `advanced`. When set, Performance Insights (`performance_insights_*` variables) and Enhanced Monitoring (`rds_monitoring_interval` and the monitoring role) are configured on the cluster instead of the cluster instances. `advanced` requires `performance_insights_enabled = true` and `performance_insights_retention_period` of at least 465 days"
 
   validation {
     condition     = var.database_insights_mode == null || contains(["standard", "advanced"], coalesce(var.database_insights_mode, "standard"))

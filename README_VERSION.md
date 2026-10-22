@@ -8,11 +8,12 @@ Performance Insights and Database Insights can now be configured at the cluster 
 
 - New variable `database_insights_mode` (`standard` or `advanced`), passed to `aws_rds_cluster`.
 - When `database_insights_mode` is set, the existing `performance_insights_enabled`, `performance_insights_kms_key_id` and `performance_insights_retention_period` variables are applied to the cluster and are no longer set on `aws_rds_cluster_instance`.
-- When `database_insights_mode` is not set, behaviour is unchanged (Performance Insights is set on the cluster instances).
+- When `database_insights_mode` is set, Enhanced Monitoring is also applied to the cluster: `rds_monitoring_interval` is set on `aws_rds_cluster` (with the monitoring role only when the interval is greater than 0), and `monitoring_role_arn` is no longer set on `aws_rds_cluster_instance`. This fixes the `MonitoringRoleArn conflicts with cluster level parameter` error.
+- When `database_insights_mode` is not set, behaviour is unchanged (Performance Insights and Enhanced Monitoring are set on the cluster instances).
 
 > Note
 
-Minimum AWS provider version raised from `>= 4.23.0` to `>= 5.89.0` (first version supporting `database_insights_mode` on `aws_rds_cluster`).
+Minimum AWS provider version raised from `>= 4.23.0` to `>= 5.92.0`. `database_insights_mode` on `aws_rds_cluster` was added in 5.89.0, cluster level `monitoring_interval`/`monitoring_role_arn` in 5.86.0, and 5.92.0 fixes `InvalidParameterCombination: To enable the Advanced mode of Database Insights` on existing clusters and `performance_insights_enabled` not taking effect on cluster create.
 
 Example for Advanced mode:
 
